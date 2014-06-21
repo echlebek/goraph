@@ -46,6 +46,17 @@ func (g *DirectedGraph) NewVertex() Vertex {
 	return v
 }
 
+// Vertices returns a slice of the vertices that are in the graph.
+func (g *DirectedGraph) Vertices() []Vertex {
+	result := make([]Vertex, len(g.edges), len(g.edges))
+	i := 0
+	for k := range g.edges {
+		result[i] = k
+		i++
+	}
+	return result
+}
+
 // TopoSort performs a topological sort on g.
 // Based on pseudocode from http://en.wikipedia.org/wiki/Topological_sorting
 // NB: Because go map keys are iterated in pseudorandom order,
@@ -58,7 +69,7 @@ func (g *DirectedGraph) TopoSort() []Vertex {
 	}
 	g = newG
 
-	result := make([]Vertex, 0, g.vertexSerialId)
+	result := make([]Vertex, 0, len(g.edges))
 	startVertices := g.findStartVertices()
 
 	for len(startVertices) > 0 {
@@ -66,8 +77,8 @@ func (g *DirectedGraph) TopoSort() []Vertex {
 		startVertices = startVertices[1:]
 		result = append(result, v)
 		for _, w := range g.edges[v] {
-			// w has no incoming edges
-			if incoming := g.incomingEdges(w); len(incoming) == 1 {
+			// w has no incoming edges except for v's
+			if incoming := g.countIncomingEdges(w); incoming == 1 {
 				startVertices = append(startVertices, w)
 			}
 		}
@@ -81,13 +92,27 @@ func (g *DirectedGraph) TopoSort() []Vertex {
 	return result
 }
 
-// IncomingEdges finds all the vertices that connect to v
+// incomingEdges finds the vertices that connect to v
 func (g *DirectedGraph) incomingEdges(v Vertex) []Vertex {
 	result := make([]Vertex, 0)
 	for w, vlist := range g.edges {
 		for _, x := range vlist {
 			if v == x {
 				result = append(result, w)
+				break
+			}
+		}
+	}
+	return result
+}
+
+// countIncomingEdges is like incomingEdges but only delivers a count.
+func (g *DirectedGraph) countIncomingEdges(v Vertex) int {
+	result := 0
+	for _, vlist := range g.edges {
+		for _, x := range vlist {
+			if v == x {
+				result += 1
 				break
 			}
 		}

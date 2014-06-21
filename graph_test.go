@@ -79,3 +79,17 @@ func TestAddVertices(t *testing.T) {
 		t.Errorf("bad graph edges: got %v, want %v", g.edges, expectedEdges)
 	}
 }
+
+func TestVertices(t *testing.T) {
+	g := NewDirectedGraph()
+
+	vertices := make([]Vertex, 100)
+	for i := 0; i < 100; i++ {
+		vertices[i] = g.NewVertex()
+	}
+
+	gverts := g.Vertices()
+	if !reflect.DeepEqual(vertices, gverts) {
+		t.Errorf("bad Vertices. got %v, want %v", gverts, vertices)
+	}
+}
