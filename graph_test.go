@@ -15,10 +15,10 @@ func TestEmptyTopoSort(t *testing.T) {
 
 // newDirectedGraphFromMap is a convenience function to create
 // a DirectedGraph from a map.
-func newDirectedGraphFromMap(data map[Vertex][]Vertex) *DirectedGraph {
+func newDirectedGraphFromMap(edges map[Vertex][]Vertex) *DirectedGraph {
 	g := NewDirectedGraph()
 	var id uint64
-	for k, v := range data {
+	for k, v := range edges {
 		if id < uint64(k) {
 			id = uint64(k)
 		}
@@ -35,12 +35,12 @@ func newDirectedGraphFromMap(data map[Vertex][]Vertex) *DirectedGraph {
 
 func TestSimpleTopoSort(t *testing.T) {
 	// TODO: construct a more complex toposort test
-	graphData := map[Vertex][]Vertex{
+	graphEdges := map[Vertex][]Vertex{
 		0: {1, 2},
 		1: {3, 4},
 		2: {5, 6},
 	}
-	g := newDirectedGraphFromMap(graphData)
+	g := newDirectedGraphFromMap(graphEdges)
 	if g.vertexSerialId != 7 {
 		t.Errorf("bad vertexSerialId: got %d, want %d", g.vertexSerialId, 7)
 	}
@@ -67,7 +67,7 @@ func TestAddVertices(t *testing.T) {
 	g.AddEdge(v2, v5)
 	g.AddEdge(v3, v6)
 
-	expectedData := map[Vertex][]Vertex{
+	expectedEdges := map[Vertex][]Vertex{
 		0: {1, 2},
 		1: {3, 4},
 		2: {5},
@@ -75,7 +75,7 @@ func TestAddVertices(t *testing.T) {
 		4: {},
 		5: {},
 	}
-	if !reflect.DeepEqual(g.data, expectedData) {
-		t.Errorf("bad graph data: got %v, want %v", g.data, expectedData)
+	if !reflect.DeepEqual(g.edges, expectedEdges) {
+		t.Errorf("bad graph edges: got %v, want %v", g.edges, expectedEdges)
 	}
 }

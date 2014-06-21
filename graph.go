@@ -10,13 +10,13 @@ type Vertex uint64
 
 // DirectedGraph provides a space-efficient directed graph.
 type DirectedGraph struct {
-	data           map[Vertex][]Vertex
+	edges          map[Vertex][]Vertex
 	vertexSerialId uint64
 }
 
 // NewDirectedGraph creates and initializes a DirectedGraph.
 func NewDirectedGraph() *DirectedGraph {
-	g := &DirectedGraph{data: make(map[Vertex][]Vertex)}
+	g := &DirectedGraph{edges: make(map[Vertex][]Vertex)}
 	return g
 }
 
@@ -24,9 +24,9 @@ func NewDirectedGraph() *DirectedGraph {
 // indicates whether or not the vertex was already in the graph; if false,
 // the value was not in the graph before it was added.
 func (g *DirectedGraph) addVertex(v Vertex) bool {
-	_, ok := g.data[v]
+	_, ok := g.edges[v]
 	if !ok {
-		g.data[v] = make([]Vertex, 0)
+		g.edges[v] = make([]Vertex, 0)
 	}
 	return ok
 }
@@ -35,7 +35,7 @@ func (g *DirectedGraph) addVertex(v Vertex) bool {
 func (g *DirectedGraph) AddEdge(v1, v2 Vertex) {
 	g.addVertex(v1)
 	g.addVertex(v2)
-	g.data[v1] = append(g.data[v1], v2)
+	g.edges[v1] = append(g.edges[v1], v2)
 }
 
 // NewVertex creates a new Vertex, adds it to the graph, and returns it.
@@ -52,9 +52,9 @@ func (g *DirectedGraph) NewVertex() Vertex {
 // repeated invocations of TopoSort may differ.
 func (g *DirectedGraph) TopoSort() []Vertex {
 	// Shallow-copy the graph and iteratively remove edges from it later.
-	newG := &DirectedGraph{make(map[Vertex][]Vertex, len(g.data)), g.vertexSerialId}
-	for k, v := range g.data {
-		newG.data[k] = v
+	newG := &DirectedGraph{make(map[Vertex][]Vertex, len(g.edges)), g.vertexSerialId}
+	for k, v := range g.edges {
+		newG.edges[k] = v
 	}
 	g = newG
 
@@ -65,17 +65,17 @@ func (g *DirectedGraph) TopoSort() []Vertex {
 		v := startVertices[0]
 		startVertices = startVertices[1:]
 		result = append(result, v)
-		for _, w := range g.data[v] {
+		for _, w := range g.edges[v] {
 			// w has no incoming edges
 			if incoming := g.incomingEdges(w); len(incoming) == 1 {
 				startVertices = append(startVertices, w)
 			}
 		}
-		delete(g.data, v)
+		delete(g.edges, v)
 	}
 
-	if len(g.data) != 0 {
-		panic(fmt.Sprintf("topological sort failed: graph is not a DAG: %v", g.data))
+	if len(g.edges) != 0 {
+		panic(fmt.Sprintf("topological sort failed: graph is not a DAG: %v", g.edges))
 	}
 
 	return result
@@ -84,7 +84,7 @@ func (g *DirectedGraph) TopoSort() []Vertex {
 // IncomingEdges finds all the vertices that connect to v
 func (g *DirectedGraph) incomingEdges(v Vertex) []Vertex {
 	result := make([]Vertex, 0)
-	for w, vlist := range g.data {
+	for w, vlist := range g.edges {
 		for _, x := range vlist {
 			if v == x {
 				result = append(result, w)
@@ -98,7 +98,7 @@ func (g *DirectedGraph) incomingEdges(v Vertex) []Vertex {
 // findStartVertices finds all the vertices with no incoming edges.
 func (g *DirectedGraph) findStartVertices() []Vertex {
 	result := make([]Vertex, 0)
-	for candidate := range g.data {
+	for candidate := range g.edges {
 		if incoming := g.incomingEdges(candidate); len(incoming) == 0 {
 			result = append(result, candidate)
 		}
