@@ -1,8 +1,24 @@
 package goraph
 
+// The Graph interface is implemented by all graph types.
+type Graph interface {
+	NewVertex() Vertex
+	AddEdge(v1, v2 Vertex)
+	Vertices() []Vertex
+	Edges() []Edge
+}
+
+var (
+	_ Graph = &DirectedGraph{}
+)
+
 // Vertex represents a node in the graph. Users should create
 // new Vertex values with NewVertex.
 type Vertex int
+
+// Edge represents an edge between two vertices.
+// In a directed graph the edge is from v1 to v2.
+type Edge struct{ v1, v2 Vertex }
 
 // DirectedGraph provides a space-efficient directed graph.
 type DirectedGraph struct {
@@ -44,13 +60,24 @@ func (g *DirectedGraph) NewVertex() Vertex {
 
 // Vertices returns a slice of the vertices that are in the graph.
 func (g *DirectedGraph) Vertices() []Vertex {
-	result := make([]Vertex, len(g.edges), len(g.edges))
-	i := 0
+	vertices := make([]Vertex, len(g.edges))
+	var i int
 	for k := range g.edges {
-		result[i] = k
+		vertices[i] = k
 		i++
 	}
-	return result
+	return vertices
+}
+
+// Edges returns all the outgoing edges of the graph.
+func (g *DirectedGraph) Edges() []Edge {
+	var edges []Edge
+	for k, neighbors := range g.edges {
+		for _, n := range neighbors {
+			edges = append(edges, Edge{k, n})
+		}
+	}
+	return edges
 }
 
 // incomingEdges finds the vertices that connect to v

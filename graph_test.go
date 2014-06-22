@@ -35,22 +35,16 @@ func TestAddVertices(t *testing.T) {
 	v5 := g.NewVertex()
 	v6 := g.NewVertex()
 
-	g.AddEdge(v1, v2)
-	g.AddEdge(v1, v3)
-	g.AddEdge(v2, v4)
-	g.AddEdge(v2, v5)
-	g.AddEdge(v3, v6)
+	expectedEdges := []Edge{{v1, v2}, {v1, v3}, {v2, v4}, {v2, v5}, {v3, v6}}
 
-	expectedEdges := map[Vertex][]Vertex{
-		0: {1, 2},
-		1: {3, 4},
-		2: {5},
-		3: {},
-		4: {},
-		5: {},
+	for _, e := range expectedEdges {
+		g.AddEdge(e.v1, e.v2)
 	}
-	if !reflect.DeepEqual(g.edges, expectedEdges) {
-		t.Errorf("bad graph edges: got %v, want %v", g.edges, expectedEdges)
+
+	edges := g.Edges()
+
+	if !reflect.DeepEqual(edges, expectedEdges) {
+		t.Errorf("bad graph edges: got %v, want %v", edges, expectedEdges)
 	}
 }
 
