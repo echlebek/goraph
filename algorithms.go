@@ -8,7 +8,7 @@ import "fmt"
 // repeated invocations of TopoSort may differ.
 func TopoSort(g *DirectedGraph) []Vertex {
 	// Shallow-copy the graph and iteratively remove edges from it later.
-	newG := &DirectedGraph{make(map[Vertex][]Vertex, len(g.edges)), g.vertexSerialId}
+	newG := &DirectedGraph{make(map[Vertex][]Vertex, len(g.edges)), g.nextVertex}
 	for k, v := range g.edges {
 		newG.edges[k] = v
 	}

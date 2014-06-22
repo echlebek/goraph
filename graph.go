@@ -2,12 +2,12 @@ package goraph
 
 // Vertex represents a node in the graph. Users should create
 // new Vertex values with NewVertex.
-type Vertex uint64
+type Vertex int
 
 // DirectedGraph provides a space-efficient directed graph.
 type DirectedGraph struct {
-	edges          map[Vertex][]Vertex
-	vertexSerialId uint64
+	edges      map[Vertex][]Vertex
+	nextVertex Vertex
 }
 
 // NewDirectedGraph creates and initializes a DirectedGraph.
@@ -36,9 +36,9 @@ func (g *DirectedGraph) AddEdge(v1, v2 Vertex) {
 
 // NewVertex creates a new Vertex, adds it to the graph, and returns it.
 func (g *DirectedGraph) NewVertex() Vertex {
-	v := Vertex(g.vertexSerialId)
+	v := g.nextVertex
 	g.addVertex(v)
-	g.vertexSerialId += 1
+	g.nextVertex++
 	return v
 }
 

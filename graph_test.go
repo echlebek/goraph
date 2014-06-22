@@ -2,55 +2,29 @@ package goraph
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 )
-
-func TestEmptyTopoSort(t *testing.T) {
-	g := NewDirectedGraph()
-	result := g.TopoSort()
-	if !reflect.DeepEqual(result, []Vertex{}) {
-		t.Fatalf("empty topo sort failed, something is seriously wrong.")
-	}
-}
 
 // newDirectedGraphFromMap is a convenience function to create
 // a DirectedGraph from a map.
 func newDirectedGraphFromMap(edges map[Vertex][]Vertex) *DirectedGraph {
 	g := NewDirectedGraph()
-	var id uint64
+	var id Vertex
 	for k, v := range edges {
-		if id < uint64(k) {
-			id = uint64(k)
+		if id < k {
+			id = k
 		}
 		for _, vertex := range v {
-			if id < uint64(vertex) {
-				id = uint64(vertex)
+			if id < vertex {
+				id = vertex
 			}
 			g.AddEdge(k, vertex)
 		}
 	}
-	g.vertexSerialId = id + 1
+	g.nextVertex = id + 1
 	return g
 }
-
-func TestSimpleTopoSort(t *testing.T) {
-	// TODO: construct a more complex toposort test
-	graphEdges := map[Vertex][]Vertex{
-		0: {1, 2},
-		1: {3, 4},
-		2: {5, 6},
-	}
-	g := newDirectedGraphFromMap(graphEdges)
-	if g.vertexSerialId != 7 {
-		t.Errorf("bad vertexSerialId: got %d, want %d", g.vertexSerialId, 7)
-	}
-	result := g.TopoSort()
-	expected := []Vertex{0, 1, 2, 3, 4, 5, 6}
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("bad TopoSort(): got %v, want %v", result, expected)
-	}
-}
-
 func TestAddVertices(t *testing.T) {
 	g := NewDirectedGraph()
 
@@ -80,6 +54,12 @@ func TestAddVertices(t *testing.T) {
 	}
 }
 
+type byId []Vertex
+
+func (v byId) Less(i, j int) bool { return v[i] < v[j] }
+func (v byId) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
+func (v byId) Len() int           { return len(v) }
+
 func TestVertices(t *testing.T) {
 	g := NewDirectedGraph()
 
@@ -89,6 +69,8 @@ func TestVertices(t *testing.T) {
 	}
 
 	gverts := g.Vertices()
+	sort.Sort(byId(vertices))
+	sort.Sort(byId(gverts))
 	if !reflect.DeepEqual(vertices, gverts) {
 		t.Errorf("bad Vertices. got %v, want %v", gverts, vertices)
 	}
