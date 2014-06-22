@@ -10,6 +10,7 @@ type Graph interface {
 
 var (
 	_ Graph = &DirectedGraph{}
+	_ Graph = &AdjacencyList{}
 )
 
 // Vertex represents a node in the graph. Users should create
@@ -19,6 +20,56 @@ type Vertex int
 // Edge represents an edge between two vertices.
 // In a directed graph the edge is from v1 to v2.
 type Edge struct{ v1, v2 Vertex }
+
+// AdjacencyList implements an undirected graph using an adjacency list.
+type AdjacencyList struct {
+	edges      map[Vertex][]Vertex
+	nextVertex Vertex
+}
+
+// NewAdjacencyList creates an empty graph.
+func NewAdjacencyList() *AdjacencyList {
+	return &AdjacencyList{edges: make(map[Vertex][]Vertex)}
+}
+
+// NewVertex adds a new vertex.
+func (g *AdjacencyList) NewVertex() Vertex {
+	v := g.nextVertex
+	g.edges[v] = make([]Vertex, 0)
+	g.nextVertex++
+	return v
+}
+
+// AddEdge adds an edge between v1 and v2.2.
+func (g *AdjacencyList) AddEdge(v1, v2 Vertex) {
+	if v2 < v1 {
+		v1, v2 = v2, v1
+	}
+	edges := g.edges[v1]
+	g.edges[v1] = append(edges, v2)
+}
+
+// Vertices returns a slice of all vertices.
+func (g *AdjacencyList) Vertices() []Vertex {
+	vertices := make([]Vertex, len(g.edges))
+	var i int
+	for k := range g.edges {
+		vertices[i] = k
+		i++
+	}
+	return vertices
+}
+
+// Edges returns a slice of all edges.
+func (g *AdjacencyList) Edges() []Edge {
+	var edges []Edge
+	for k, neighbors := range g.edges {
+		for _, n := range neighbors {
+			edges = append(edges, Edge{k, n})
+		}
+	}
+	return edges
+}
 
 // DirectedGraph provides a space-efficient directed graph.
 type DirectedGraph struct {
