@@ -36,3 +36,20 @@ func TestSimpleTopoSort(t *testing.T) {
 		t.Errorf("bad TopoSort(): got %v, want %v", result, expected)
 	}
 }
+
+func TestShortestPath(t *testing.T) {
+	graphEdges := map[Vertex][]Vertex{
+		0: {1},
+		1: {2, 3},
+		2: {3},
+		3: {4, 5},
+		4: {5},
+		5: {},
+	}
+	g := &AdjacencyList{graphEdges, Vertex(6)}
+	path := ShortestPath(g, Vertex(0), Vertex(5))
+	expected := []Vertex{0, 1, 3, 5}
+	if !reflect.DeepEqual(path, expected) {
+		t.Errorf("bad path: got %v, want %v", path, expected)
+	}
+}

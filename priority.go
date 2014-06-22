@@ -47,7 +47,7 @@ func (pq *priorityQueue) Pop() interface{} {
 }
 
 // update modifies the priority and vertex of an qItem in the queue.
-func (pq *priorityQueue) update(item *qItem, v Vertex, priority int) {
+func (pq *priorityQueue) updateQItem(item *qItem, v Vertex, priority int) {
 	item.vertex = v
 	item.priority = priority
 	heap.Fix(pq, item.index)

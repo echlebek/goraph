@@ -6,6 +6,7 @@ type Graph interface {
 	AddEdge(v1, v2 Vertex)
 	Vertices() []Vertex
 	Edges() []Edge
+	Neighbours(v Vertex) []Vertex
 }
 
 var (
@@ -71,6 +72,11 @@ func (g *AdjacencyList) Edges() []Edge {
 	return edges
 }
 
+// Neighbours returns a slice of v's neighbours.
+func (g *AdjacencyList) Neighbours(v Vertex) []Vertex {
+	return g.edges[v]
+}
+
 // DirectedGraph provides a space-efficient directed graph.
 type DirectedGraph struct {
 	edges      map[Vertex][]Vertex
@@ -129,6 +135,11 @@ func (g *DirectedGraph) Edges() []Edge {
 		}
 	}
 	return edges
+}
+
+// Neighbours returns a slice of v's neighbours.
+func (g *DirectedGraph) Neighbours(v Vertex) []Vertex {
+	return g.edges[v]
 }
 
 // incomingEdges finds the vertices that connect to v
