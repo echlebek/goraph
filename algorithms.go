@@ -6,7 +6,7 @@ import "fmt"
 // Based on pseudocode from http://en.wikipedia.org/wiki/Topological_sorting
 // NB: Because go map keys are iterated in pseudorandom order,
 // repeated invocations of TopoSort may differ.
-func TopoSort(g *DirectedGraph) []Vertex {
+func TopoSort(g *DirectedGraph) ([]Vertex, error) {
 	// Shallow-copy the graph and iteratively remove edges from it later.
 	newG := &DirectedGraph{make(map[Vertex][]Vertex, len(g.edges)), g.nextVertex}
 	for k, v := range g.edges {
@@ -31,10 +31,10 @@ func TopoSort(g *DirectedGraph) []Vertex {
 	}
 
 	if len(g.edges) != 0 {
-		panic(fmt.Sprintf("topological sort failed: graph is not a DAG: %v", g.edges))
+		return nil, fmt.Errorf("topological sort failed: graph is not a DAG: %v", g.edges)
 	}
 
-	return result
+	return result, nil
 }
 
 // findStartVertices finds all the vertices with no incoming edges.

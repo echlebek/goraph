@@ -7,7 +7,10 @@ import (
 
 func TestEmptyTopoSort(t *testing.T) {
 	g := NewDirectedGraph()
-	result := TopoSort(g)
+	result, err := TopoSort(g)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !reflect.DeepEqual(result, []Vertex{}) {
 		t.Fatalf("empty topo sort failed, something is seriously wrong.")
 	}
@@ -24,7 +27,10 @@ func TestSimpleTopoSort(t *testing.T) {
 	if g.nextVertex != 7 {
 		t.Errorf("bad nextVertex: got %d, want %d", g.nextVertex, 7)
 	}
-	result := TopoSort(g)
+	result, err := TopoSort(g)
+	if err != nil {
+		t.Fatal(err)
+	}
 	expected := []Vertex{0, 1, 2, 3, 4, 5, 6}
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("bad TopoSort(): got %v, want %v", result, expected)
