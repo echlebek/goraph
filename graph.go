@@ -1,5 +1,9 @@
 package goraph
 
+import (
+	"sort"
+)
+
 // The Graph interface is implemented by all graph types.
 type Graph interface {
 	NewVertex() Vertex
@@ -20,7 +24,7 @@ type Vertex int
 
 // Edge represents an edge between two vertices.
 // In a directed graph the edge is from v1 to v2.
-type Edge struct{ v1, v2 Vertex }
+type Edge struct{ U, V Vertex }
 
 // AdjacencyList implements an undirected graph using an adjacency list.
 type AdjacencyList struct {
@@ -50,9 +54,29 @@ func (g *AdjacencyList) AddEdge(v1, v2 Vertex) {
 	g.edges[v1] = append(edges, v2)
 }
 
+type vertexSlice []Vertex
+
+func (p vertexSlice) Len() int           { return len(p) }
+func (p vertexSlice) Less(i, j int) bool { return p[i] < p[j] }
+func (p vertexSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p vertexSlice) Sort()              { sort.Sort(p) }
+
+type edgeSlice []Edge
+
+func (p edgeSlice) Len() int { return len(p) }
+func (p edgeSlice) Less(i, j int) bool {
+	if p[i].U == p[j].U {
+		return p[i].V < p[j].V
+	} else {
+		return p[i].U < p[j].U
+	}
+}
+func (p edgeSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p edgeSlice) Sort()         { sort.Sort(p) }
+
 // Vertices returns a slice of all vertices.
 func (g *AdjacencyList) Vertices() []Vertex {
-	vertices := make([]Vertex, len(g.edges))
+	vertices := make(vertexSlice, len(g.edges))
 	var i int
 	for k := range g.edges {
 		vertices[i] = k
