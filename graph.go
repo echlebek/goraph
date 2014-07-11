@@ -23,7 +23,7 @@ var (
 type Vertex int
 
 // Edge represents an edge between two vertices.
-// In a directed graph the edge is from v1 to v2.
+// In a directed graph, the edge is from U to V.
 type Edge struct{ U, V Vertex }
 
 // AdjacencyList implements an undirected graph using an adjacency list.
