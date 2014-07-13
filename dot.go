@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"sort"
 )
 
 const (
@@ -60,8 +61,13 @@ func writeAttrs(w *bytes.Buffer, name string, tabs int, attrs map[string]interfa
 	}
 	fmt.Fprint(w, ws)
 	fmt.Fprintf(w, "%s [ ", name)
-	for k, v := range attrs {
-		fmt.Fprintf(w, "%s=%v, ", k, v)
+	keys := make(sort.StringSlice, 0, len(attrs))
+	for k := range attrs {
+		keys = append(keys, k)
+	}
+	sort.Sort(keys)
+	for _, k := range keys {
+		fmt.Fprintf(w, "%s=%v, ", k, attrs[k])
 	}
 	fmt.Fprint(w, "];\n")
 }
