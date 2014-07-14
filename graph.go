@@ -141,11 +141,9 @@ func (g *DirectedGraph) NewVertex() Vertex {
 
 // Vertices returns a slice of the vertices that are in the graph.
 func (g *DirectedGraph) Vertices() []Vertex {
-	vertices := make([]Vertex, len(g.edges))
-	var i int
+	vertices := make([]Vertex, 0, len(g.edges))
 	for k := range g.edges {
-		vertices[i] = k
-		i++
+		vertices = append(vertices, k)
 	}
 	return vertices
 }
@@ -164,32 +162,4 @@ func (g *DirectedGraph) Edges() []Edge {
 // Neighbours returns a slice of v's neighbours.
 func (g *DirectedGraph) Neighbours(v Vertex) []Vertex {
 	return g.edges[v]
-}
-
-// incomingEdges finds the vertices that connect to v
-func (g *DirectedGraph) incomingEdges(v Vertex) []Vertex {
-	result := make([]Vertex, 0)
-	for w, vlist := range g.edges {
-		for _, x := range vlist {
-			if v == x {
-				result = append(result, w)
-				break
-			}
-		}
-	}
-	return result
-}
-
-// countIncomingEdges is like incomingEdges but only delivers a count.
-func (g *DirectedGraph) countIncomingEdges(v Vertex) int {
-	result := 0
-	for _, vlist := range g.edges {
-		for _, x := range vlist {
-			if v == x {
-				result += 1
-				break
-			}
-		}
-	}
-	return result
 }

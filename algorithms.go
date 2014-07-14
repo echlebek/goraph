@@ -4,51 +4,51 @@ import (
 	"fmt"
 )
 
-// TopoSort performs a topological sort on g.
-// Based on pseudocode from http://en.wikipedia.org/wiki/Topological_sorting
-// NB: Because go map keys are iterated in pseudorandom order,
-// repeated invocations of TopoSort may differ.
-func TopoSort(g *DirectedGraph) ([]Vertex, error) {
-	// Shallow-copy the graph and iteratively remove edges from it later.
-	newG := &DirectedGraph{make(map[Vertex][]Vertex, len(g.edges)), g.nextVertex}
-	for k, v := range g.edges {
-		newG.edges[k] = v
+// TopoSort returns a slice of the vertices in g in topologically
+// sorted order. (https://en.wikipedia.org/wiki/Topological_sorting)
+//
+// If deterministic is true, then the vertices are sorted by id before
+// the algorithm begins, guaranteeing a repeatable result.
+func TopoSort(g Graph, deterministic bool) (result []Vertex, err error) {
+	verts := vertexSlice(g.Vertices())
+	if deterministic {
+		verts.Sort()
 	}
-	g = newG
 
-	result := make([]Vertex, 0, len(g.edges))
-	startVertices := findStartVertices(g)
+	rlen := len(verts)
+	result = make([]Vertex, 0, rlen)
+	marked := make(map[Vertex]bool, rlen) // visited vertices
 
-	for len(startVertices) > 0 {
-		v := startVertices[0]
-		startVertices = startVertices[1:]
-		result = append(result, v)
-		for _, w := range g.Neighbours(v) {
-			// w has no incoming edges except for v's
-			if incoming := g.countIncomingEdges(w); incoming == 1 {
-				startVertices = append(startVertices, w)
+	var visit func(Vertex)
+	visit = func(vtx Vertex) {
+		if permanent, ok := marked[vtx]; ok {
+			if !permanent {
+				err = fmt.Errorf("cannot perform toposort: not a DAG")
+			} else {
+				return
 			}
 		}
-		delete(g.edges, v)
-	}
-
-	if len(g.edges) != 0 {
-		return nil, fmt.Errorf("topological sort failed: graph is not a DAG: %v", g.edges)
-	}
-
-	return result, nil
-}
-
-// findStartVertices finds all the vertices with no incoming edges.
-func findStartVertices(g *DirectedGraph) []Vertex {
-	result := make([]Vertex, 0)
-	for candidate := range g.edges {
-		if incoming := g.incomingEdges(candidate); len(incoming) == 0 {
-			result = append(result, candidate)
+		// Mark vtx temporarily
+		marked[vtx] = false
+		for _, v := range g.Neighbours(vtx) {
+			visit(v)
 		}
+		// mark vtx permanently
+		marked[vtx] = true
+		result = append(result, vtx)
 	}
 
-	return result
+	for _, v := range verts {
+		visit(v)
+	}
+
+	// The algorithm asks us to prepend to the result, but since we're using a
+	// slice here, just reverse it after appending items.
+	for i := 0; i <= len(result)/2; i++ {
+		result[i], result[rlen-i-1] = result[rlen-i-1], result[i]
+	}
+
+	return
 }
 
 // ShortestPath returns the shortest path between source and target using
