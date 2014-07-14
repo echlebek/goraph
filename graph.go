@@ -7,7 +7,9 @@ import (
 // The Graph interface is implemented by all graph types.
 type Graph interface {
 	NewVertex() Vertex
+	DeleteVertex(v Vertex)
 	AddEdge(v1, v2 Vertex)
+	RemoveEdge(v1, v2 Vertex)
 	Vertices() []Vertex
 	Edges() []Edge
 	Neighbours(v Vertex) []Vertex
@@ -45,13 +47,50 @@ func (g *AdjacencyList) NewVertex() Vertex {
 	return v
 }
 
-// AddEdge adds an edge between v1 and v2.2.
+// DeleteVertex permanently removes vertex v.
+func (g *AdjacencyList) DeleteVertex(v Vertex) {
+	delete(g.edges, v)
+	for vtx, vertices := range g.edges {
+		for idx, candidate := range vertices {
+			if candidate == v {
+				g.edges[vtx] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
+			}
+		}
+	}
+}
+
+// AddEdge adds an edge between v1 and v2.
 func (g *AdjacencyList) AddEdge(v1, v2 Vertex) {
 	if v2 < v1 {
 		v1, v2 = v2, v1
 	}
 	edges := g.edges[v1]
 	g.edges[v1] = append(edges, v2)
+}
+
+// RemoveEdge removes the edge between v2 and v2. It returns true if the edge
+// was removed, and false otherwise.
+func (g *AdjacencyList) RemoveEdge(v1, v2 Vertex) {
+	if v2 < v1 {
+		v1, v2 = v2, v1
+	}
+	vertices, ok := g.edges[v1]
+	if !ok {
+		return
+	}
+	var (
+		idx int = -1
+		vtx Vertex
+	)
+	for idx, vtx = range vertices {
+		if vtx == v2 {
+			break
+		}
+	}
+	if idx >= 0 {
+		// Remove the edge
+		g.edges[v1] = append(g.edges[v1][:idx], g.edges[v1][idx+1:len(g.edges[v1])]...)
+	}
 }
 
 // VertexSlice is a convenience for sorting vertices by ID.
@@ -133,12 +172,46 @@ func (g *DirectedGraph) AddEdge(v1, v2 Vertex) {
 	g.edges[v1] = append(g.edges[v1], v2)
 }
 
+// RemoveEdge removes the edge between v2 and v2. It returns true if the edge
+// was removed, and false otherwise.
+func (g *DirectedGraph) RemoveEdge(v1, v2 Vertex) {
+	vertices, ok := g.edges[v1]
+	if !ok {
+		return
+	}
+	var (
+		idx int = -1
+		vtx Vertex
+	)
+	for idx, vtx = range vertices {
+		if vtx == v2 {
+			break
+		}
+	}
+	if idx >= 0 {
+		// Remove the edge
+		g.edges[v1] = append(g.edges[v1][:idx], g.edges[v1][idx+1:len(g.edges[v1])]...)
+	}
+}
+
 // NewVertex creates a new Vertex, adds it to the graph, and returns it.
 func (g *DirectedGraph) NewVertex() Vertex {
 	v := g.nextVertex
 	g.addVertex(v)
 	g.nextVertex++
 	return v
+}
+
+// DeleteVertex permanently removes vertex v.
+func (g *DirectedGraph) DeleteVertex(v Vertex) {
+	delete(g.edges, v)
+	for vtx, vertices := range g.edges {
+		for idx, candidate := range vertices {
+			if candidate == v {
+				g.edges[vtx] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
+			}
+		}
+	}
 }
 
 // Vertices returns a slice of the vertices that are in the graph.

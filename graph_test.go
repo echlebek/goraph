@@ -68,6 +68,25 @@ func testGraph(t *testing.T, g Graph) {
 	if !reflect.DeepEqual(edges, expectedEdges) {
 		t.Errorf("bad graph edges: got %v, want %v", edges, expectedEdges)
 	}
+
+	g.RemoveEdge(v3, v6)
+
+	edges = EdgeSlice(g.Edges())
+	edges.Sort()
+	expectedEdges = EdgeSlice{{v1, v2}, {v1, v3}, {v2, v4}, {v2, v5}}
+
+	if !reflect.DeepEqual(edges, expectedEdges) {
+		t.Errorf("bad graph edges: got %v, want %v", edges, expectedEdges)
+	}
+
+	g.DeleteVertex(v2)
+	edges = EdgeSlice(g.Edges())
+	edges.Sort()
+	expectedEdges = EdgeSlice{{v1, v3}}
+
+	if !reflect.DeepEqual(edges, expectedEdges) {
+		t.Errorf("bad graph edges: got %v, want %v", edges, expectedEdges)
+	}
 }
 
 func TestPredecessors(t *testing.T) {
