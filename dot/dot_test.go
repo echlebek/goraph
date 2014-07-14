@@ -10,7 +10,7 @@ func TestDirectedDotWriter(t *testing.T) {
 	graph := goraph.NewDirectedGraph()
 	verts := make([]goraph.Vertex, 0, 10)
 	for i := 0; i < 10; i++ {
-		verts = append(verts, graph.NewVertex())
+		verts = append(verts, graph.AddVertex())
 	}
 	graph.AddEdge(verts[4], verts[3])
 	graph.AddEdge(verts[4], verts[5])

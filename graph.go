@@ -6,8 +6,8 @@ import (
 
 // The Graph interface is implemented by all graph types.
 type Graph interface {
-	NewVertex() Vertex
-	DeleteVertex(v Vertex)
+	AddVertex() Vertex
+	RemoveVertex(v Vertex)
 	AddEdge(v1, v2 Vertex)
 	RemoveEdge(v1, v2 Vertex)
 	Vertices() []Vertex
@@ -21,7 +21,7 @@ var (
 )
 
 // Vertex represents a node in the graph. Users should create
-// new Vertex values with NewVertex.
+// new Vertex values with AddVertex.
 type Vertex int
 
 // Edge represents an edge between two vertices.
@@ -39,16 +39,16 @@ func NewAdjacencyList() *AdjacencyList {
 	return &AdjacencyList{edges: make(map[Vertex][]Vertex)}
 }
 
-// NewVertex adds a new vertex.
-func (g *AdjacencyList) NewVertex() Vertex {
+// AddVertex adds a new vertex.
+func (g *AdjacencyList) AddVertex() Vertex {
 	v := g.nextVertex
 	g.edges[v] = make([]Vertex, 0)
 	g.nextVertex++
 	return v
 }
 
-// DeleteVertex permanently removes vertex v.
-func (g *AdjacencyList) DeleteVertex(v Vertex) {
+// RemoveVertex permanently removes vertex v.
+func (g *AdjacencyList) RemoveVertex(v Vertex) {
 	delete(g.edges, v)
 	for vtx, vertices := range g.edges {
 		for idx, candidate := range vertices {
@@ -68,8 +68,7 @@ func (g *AdjacencyList) AddEdge(v1, v2 Vertex) {
 	g.edges[v1] = append(edges, v2)
 }
 
-// RemoveEdge removes the edge between v2 and v2. It returns true if the edge
-// was removed, and false otherwise.
+// RemoveEdge removes the edge between v2 and v2.
 func (g *AdjacencyList) RemoveEdge(v1, v2 Vertex) {
 	if v2 < v1 {
 		v1, v2 = v2, v1
@@ -89,7 +88,7 @@ func (g *AdjacencyList) RemoveEdge(v1, v2 Vertex) {
 	}
 	if idx >= 0 {
 		// Remove the edge
-		g.edges[v1] = append(g.edges[v1][:idx], g.edges[v1][idx+1:len(g.edges[v1])]...)
+		g.edges[v1] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
 	}
 }
 
@@ -172,8 +171,7 @@ func (g *DirectedGraph) AddEdge(v1, v2 Vertex) {
 	g.edges[v1] = append(g.edges[v1], v2)
 }
 
-// RemoveEdge removes the edge between v2 and v2. It returns true if the edge
-// was removed, and false otherwise.
+// RemoveEdge removes the edge between v1 and v2.
 func (g *DirectedGraph) RemoveEdge(v1, v2 Vertex) {
 	vertices, ok := g.edges[v1]
 	if !ok {
@@ -190,20 +188,20 @@ func (g *DirectedGraph) RemoveEdge(v1, v2 Vertex) {
 	}
 	if idx >= 0 {
 		// Remove the edge
-		g.edges[v1] = append(g.edges[v1][:idx], g.edges[v1][idx+1:len(g.edges[v1])]...)
+		g.edges[v1] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
 	}
 }
 
-// NewVertex creates a new Vertex, adds it to the graph, and returns it.
-func (g *DirectedGraph) NewVertex() Vertex {
+// AddVertex adds a new vertex.
+func (g *DirectedGraph) AddVertex() Vertex {
 	v := g.nextVertex
 	g.addVertex(v)
 	g.nextVertex++
 	return v
 }
 
-// DeleteVertex permanently removes vertex v.
-func (g *DirectedGraph) DeleteVertex(v Vertex) {
+// RemoveVertex permanently removes vertex v.
+func (g *DirectedGraph) RemoveVertex(v Vertex) {
 	delete(g.edges, v)
 	for vtx, vertices := range g.edges {
 		for idx, candidate := range vertices {

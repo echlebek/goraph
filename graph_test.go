@@ -38,7 +38,7 @@ func TestDirectedGraph(t *testing.T) {
 func testGraph(t *testing.T, g Graph) {
 	vertices := make(VertexSlice, 100)
 	for i := 0; i < 100; i++ {
-		vertices[i] = g.NewVertex()
+		vertices[i] = g.AddVertex()
 	}
 
 	v1 := vertices[0]
@@ -79,7 +79,7 @@ func testGraph(t *testing.T, g Graph) {
 		t.Errorf("bad graph edges: got %v, want %v", edges, expectedEdges)
 	}
 
-	g.DeleteVertex(v2)
+	g.RemoveVertex(v2)
 	edges = EdgeSlice(g.Edges())
 	edges.Sort()
 	expectedEdges = EdgeSlice{{v1, v3}}
@@ -93,7 +93,7 @@ func TestPredecessors(t *testing.T) {
 	g := NewDirectedGraph()
 	vertices := make(VertexSlice, 10)
 	for i := range vertices {
-		vertices[i] = g.NewVertex()
+		vertices[i] = g.AddVertex()
 		if i > 0 {
 			g.AddEdge(vertices[i], vertices[0])
 		}
