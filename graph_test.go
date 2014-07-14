@@ -36,7 +36,7 @@ func TestDirectedGraph(t *testing.T) {
 }
 
 func testGraph(t *testing.T, g Graph) {
-	vertices := make(vertexSlice, 100)
+	vertices := make(VertexSlice, 100)
 	for i := 0; i < 100; i++ {
 		vertices[i] = g.NewVertex()
 	}
@@ -48,21 +48,21 @@ func testGraph(t *testing.T, g Graph) {
 	v5 := vertices[4]
 	v6 := vertices[5]
 
-	gverts := vertexSlice(g.Vertices())
+	gverts := VertexSlice(g.Vertices())
 	vertices.Sort()
 	gverts.Sort()
 	if !reflect.DeepEqual(vertices, gverts) {
 		t.Errorf("bad Vertices. got %v, want %v", gverts, vertices)
 	}
 
-	expectedEdges := edgeSlice{{v1, v2}, {v1, v3}, {v2, v4}, {v2, v5}, {v3, v6}}
+	expectedEdges := EdgeSlice{{v1, v2}, {v1, v3}, {v2, v4}, {v2, v5}, {v3, v6}}
 	expectedEdges.Sort()
 
 	for _, e := range expectedEdges {
 		g.AddEdge(e.U, e.V)
 	}
 
-	edges := edgeSlice(g.Edges())
+	edges := EdgeSlice(g.Edges())
 	edges.Sort()
 
 	if !reflect.DeepEqual(edges, expectedEdges) {

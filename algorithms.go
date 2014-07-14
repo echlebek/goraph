@@ -10,7 +10,7 @@ import (
 // If deterministic is true, then the vertices are sorted by id before
 // the algorithm begins, guaranteeing a repeatable result.
 func TopoSort(g Graph, deterministic bool) (result []Vertex, err error) {
-	verts := vertexSlice(g.Vertices())
+	verts := VertexSlice(g.Vertices())
 	if deterministic {
 		verts.Sort()
 	}
@@ -44,7 +44,7 @@ func TopoSort(g Graph, deterministic bool) (result []Vertex, err error) {
 
 	// The algorithm asks us to prepend to the result, but since we're using a
 	// slice here, just reverse it after appending items.
-	for i := 0; i <= len(result)/2; i++ {
+	for i := 0; i < len(result)/2; i++ {
 		result[i], result[rlen-i-1] = result[rlen-i-1], result[i]
 	}
 

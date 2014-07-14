@@ -54,29 +54,31 @@ func (g *AdjacencyList) AddEdge(v1, v2 Vertex) {
 	g.edges[v1] = append(edges, v2)
 }
 
-type vertexSlice []Vertex
+// VertexSlice is a convenience for sorting vertices by ID.
+type VertexSlice []Vertex
 
-func (p vertexSlice) Len() int           { return len(p) }
-func (p vertexSlice) Less(i, j int) bool { return p[i] < p[j] }
-func (p vertexSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p vertexSlice) Sort()              { sort.Sort(p) }
+func (p VertexSlice) Len() int           { return len(p) }
+func (p VertexSlice) Less(i, j int) bool { return p[i] < p[j] }
+func (p VertexSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p VertexSlice) Sort()              { sort.Sort(p) }
 
-type edgeSlice []Edge
+// EdgeSlice is a convenience for sorted edges by ID.
+type EdgeSlice []Edge
 
-func (p edgeSlice) Len() int { return len(p) }
-func (p edgeSlice) Less(i, j int) bool {
+func (p EdgeSlice) Len() int { return len(p) }
+func (p EdgeSlice) Less(i, j int) bool {
 	if p[i].U == p[j].U {
 		return p[i].V < p[j].V
 	} else {
 		return p[i].U < p[j].U
 	}
 }
-func (p edgeSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
-func (p edgeSlice) Sort()         { sort.Sort(p) }
+func (p EdgeSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p EdgeSlice) Sort()         { sort.Sort(p) }
 
 // Vertices returns a slice of all vertices.
 func (g *AdjacencyList) Vertices() []Vertex {
-	vertices := make(vertexSlice, len(g.edges))
+	vertices := make(VertexSlice, len(g.edges))
 	var i int
 	for k := range g.edges {
 		vertices[i] = k
