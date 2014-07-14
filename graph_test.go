@@ -69,3 +69,20 @@ func testGraph(t *testing.T, g Graph) {
 		t.Errorf("bad graph edges: got %v, want %v", edges, expectedEdges)
 	}
 }
+
+func TestPredecessors(t *testing.T) {
+	g := NewDirectedGraph()
+	vertices := make(VertexSlice, 10)
+	for i := range vertices {
+		vertices[i] = g.NewVertex()
+		if i > 0 {
+			g.AddEdge(vertices[i], vertices[0])
+		}
+	}
+	preds := VertexSlice(g.Predecessors(vertices[0]))
+	preds.Sort()
+	expected := VertexSlice{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	if !reflect.DeepEqual(preds, expected) {
+		t.Errorf("bad predecessors: got %v, want %v", preds, expected)
+	}
+}

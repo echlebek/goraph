@@ -165,3 +165,14 @@ func (g *DirectedGraph) Edges() []Edge {
 func (g *DirectedGraph) Neighbours(v Vertex) []Vertex {
 	return g.edges[v]
 }
+
+func (g *DirectedGraph) Predecessors(v Vertex) (result []Vertex) {
+	for vtx, vertices := range g.edges {
+		for _, candidate := range vertices {
+			if candidate == v {
+				result = append(result, vtx)
+			}
+		}
+	}
+	return
+}
