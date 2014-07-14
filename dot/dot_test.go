@@ -7,8 +7,8 @@ import (
 )
 
 func TestDirectedDotWriter(t *testing.T) {
-	graph := NewDirectedGraph()
-	verts := make([]Vertex, 0, 10)
+	graph := goraph.NewDirectedGraph()
+	verts := make([]goraph.Vertex, 0, 10)
 	for i := 0; i < 10; i++ {
 		verts = append(verts, graph.NewVertex())
 	}
@@ -32,7 +32,7 @@ func TestDirectedDotWriter(t *testing.T) {
 
 	dot.GraphAttrs["splines"] = false
 
-	dot.EdgeAttrs[Edge{verts[5], verts[6]}]["arrowhead"] = "diamond"
+	dot.EdgeAttrs[goraph.Edge{verts[5], verts[6]}]["arrowhead"] = "diamond"
 
 	WriteDot(buf, dot)
 

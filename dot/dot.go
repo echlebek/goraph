@@ -113,7 +113,7 @@ func WriteDot(w io.Writer, dot Dot) (int64, error) {
 	}
 
 	// Write all the edges
-	edges := EdgeSlice(g.Edges())
+	edges := goraph.EdgeSlice(g.Edges())
 	edges.Sort()
 	for _, e := range edges {
 		fmt.Fprintf(buf, "\t%d %s %d", e.U, nodeSep, e.V)
