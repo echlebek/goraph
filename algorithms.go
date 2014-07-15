@@ -19,8 +19,6 @@ func TopoSort(g Graph, deterministic bool) (result []Vertex, err error) {
 		verts.Sort()
 	}
 
-	fmt.Println(g.Vertices())
-
 	rlen := len(verts)
 	result = make(VertexSlice, 0, rlen)
 	marked := make(map[Vertex]bool, rlen) // visited vertices
