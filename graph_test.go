@@ -5,12 +5,13 @@ import (
 	"testing"
 )
 
-// newDirectedGraphFromMap is a convenience function to create
-// a DirectedGraph from a map.
-func newDirectedGraphFromMap(edges map[Vertex][]Vertex) *DirectedGraph {
-	g := NewDirectedGraph()
+// newDirectedAdjacencyListFromMap is a convenience function to create
+// a DirectedAdjacencyList from a map.
+func newDirectedAdjacencyListFromMap(edges map[Vertex][]Vertex) *AdjacencyList {
+	g := NewDirectedAdjacencyList()
 	var id Vertex
 	for k, v := range edges {
+		g.edges[k] = v
 		if id < k {
 			id = k
 		}
@@ -18,7 +19,9 @@ func newDirectedGraphFromMap(edges map[Vertex][]Vertex) *DirectedGraph {
 			if id < vertex {
 				id = vertex
 			}
-			g.AddEdge(k, vertex)
+			if _, ok := g.edges[vertex]; !ok {
+				g.edges[vertex] = make([]Vertex, 0)
+			}
 		}
 	}
 	g.nextVertex = id + 1
@@ -30,8 +33,8 @@ func TestAdjacencyList(t *testing.T) {
 	testGraph(t, g)
 }
 
-func TestDirectedGraph(t *testing.T) {
-	g := NewDirectedGraph()
+func TestDirectedAdjacencyList(t *testing.T) {
+	g := NewDirectedAdjacencyList()
 	testGraph(t, g)
 }
 
@@ -90,7 +93,7 @@ func testGraph(t *testing.T, g Graph) {
 }
 
 func TestPredecessors(t *testing.T) {
-	g := NewDirectedGraph()
+	g := NewDirectedAdjacencyList()
 	vertices := make(VertexSlice, 10)
 	for i := range vertices {
 		vertices[i] = g.AddVertex()
