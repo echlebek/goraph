@@ -15,7 +15,7 @@ func init() {
 }
 
 func initDense() {
-	dense = gp.NewDirectedAdjacencyList()
+	dense = gp.NewDirectedGraph()
 	vertices := make([]gp.Vertex, 0, 1000)
 	for i := 0; i < 1000; i++ {
 		vertices = append(vertices, dense.AddVertex())
