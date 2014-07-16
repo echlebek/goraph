@@ -6,7 +6,7 @@ import (
 )
 
 func TestEmptyTopoSort(t *testing.T) {
-	g := NewDirectedAdjacencyList()
+	g := NewDirectedGraph()
 	result, err := TopoSort(g, false)
 	if err != nil {
 		t.Fatal(err)
@@ -23,7 +23,7 @@ func TestSimpleTopoSort(t *testing.T) {
 		1: {3, 4},
 		2: {5, 6},
 	}
-	g := newDirectedAdjacencyListFromMap(graphEdges)
+	g := newDirectedGraphFromMap(graphEdges)
 	if g.nextVertex != 7 {
 		t.Errorf("bad nextVertex: got %d, want %d", g.nextVertex, 7)
 	}
@@ -46,7 +46,7 @@ func TestShortestPath(t *testing.T) {
 		4: {5},
 		5: {},
 	}
-	g := &AdjacencyList{graphEdges, Vertex(6), false}
+	g := &AdjacencyList{graphEdges, Vertex(6)}
 	path := ShortestPath(g, Vertex(0), Vertex(5))
 	expected := []Vertex{0, 1, 3, 5}
 	if !reflect.DeepEqual(path, expected) {

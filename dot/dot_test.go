@@ -7,7 +7,7 @@ import (
 )
 
 func TestDirectedDotWriter(t *testing.T) {
-	graph := goraph.NewDirectedAdjacencyList()
+	graph := goraph.NewDirectedGraph()
 	verts := make([]goraph.Vertex, 0, 10)
 	for i := 0; i < 10; i++ {
 		verts = append(verts, graph.AddVertex())

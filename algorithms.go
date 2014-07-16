@@ -10,26 +10,23 @@ import (
 // If deterministic is true, then the vertices are sorted by id before
 // the algorithm begins, guaranteeing a repeatable result.
 func TopoSort(g Graph, deterministic bool) (result []Vertex, err error) {
-	if !g.IsDirected() {
-		err = fmt.Errorf("graph is not a directed graph")
-		return
-	}
 	verts := VertexSlice(g.Vertices())
 	if deterministic {
 		verts.Sort()
 	}
 
 	rlen := len(verts)
-	result = make(VertexSlice, 0, rlen)
+	result = make([]Vertex, 0, rlen)
 	marked := make(map[Vertex]bool, rlen) // visited vertices
 
 	var visit func(Vertex)
 	visit = func(vtx Vertex) {
 		if permanent, ok := marked[vtx]; ok {
 			if !permanent {
-				err = fmt.Errorf("graph is not a directed graph")
+				err = fmt.Errorf("cannot perform toposort: not a DAG")
+			} else {
+				return
 			}
-			return
 		}
 		// Mark vtx temporarily
 		marked[vtx] = false
