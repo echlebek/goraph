@@ -16,7 +16,7 @@ type Graph interface {
 }
 
 var (
-	_ Graph = &DirectedGraph{}
+	_ Graph = &DirectedAdjacencyList{}
 	_ Graph = &AdjacencyList{}
 )
 
@@ -141,22 +141,22 @@ func (g *AdjacencyList) Neighbours(v Vertex) []Vertex {
 	return g.edges[v]
 }
 
-// DirectedGraph provides a space-efficient directed graph.
-type DirectedGraph struct {
+// DirectedAdjacencyList provides a space-efficient directed graph.
+type DirectedAdjacencyList struct {
 	edges      map[Vertex][]Vertex
 	nextVertex Vertex
 }
 
-// NewDirectedGraph creates and initializes a DirectedGraph.
-func NewDirectedGraph() *DirectedGraph {
-	g := &DirectedGraph{edges: make(map[Vertex][]Vertex)}
+// NewDirectedAdjacencyList creates and initializes a DirectedAdjacencyList.
+func NewDirectedAdjacencyList() *DirectedAdjacencyList {
+	g := &DirectedAdjacencyList{edges: make(map[Vertex][]Vertex)}
 	return g
 }
 
 // addVertex adds v to the graph in an idempotent fashion. The return value
 // indicates whether or not the vertex was already in the graph; if false,
 // the value was not in the graph before it was added.
-func (g *DirectedGraph) addVertex(v Vertex) bool {
+func (g *DirectedAdjacencyList) addVertex(v Vertex) bool {
 	_, ok := g.edges[v]
 	if !ok {
 		g.edges[v] = make([]Vertex, 0)
@@ -165,14 +165,14 @@ func (g *DirectedGraph) addVertex(v Vertex) bool {
 }
 
 // AddEdge connects vertices v1 and v2 in the graph.
-func (g *DirectedGraph) AddEdge(v1, v2 Vertex) {
+func (g *DirectedAdjacencyList) AddEdge(v1, v2 Vertex) {
 	g.addVertex(v1)
 	g.addVertex(v2)
 	g.edges[v1] = append(g.edges[v1], v2)
 }
 
 // RemoveEdge removes the edge between v1 and v2.
-func (g *DirectedGraph) RemoveEdge(v1, v2 Vertex) {
+func (g *DirectedAdjacencyList) RemoveEdge(v1, v2 Vertex) {
 	vertices, ok := g.edges[v1]
 	if !ok {
 		return
@@ -193,7 +193,7 @@ func (g *DirectedGraph) RemoveEdge(v1, v2 Vertex) {
 }
 
 // AddVertex adds a new vertex.
-func (g *DirectedGraph) AddVertex() Vertex {
+func (g *DirectedAdjacencyList) AddVertex() Vertex {
 	v := g.nextVertex
 	g.addVertex(v)
 	g.nextVertex++
@@ -201,7 +201,7 @@ func (g *DirectedGraph) AddVertex() Vertex {
 }
 
 // RemoveVertex permanently removes vertex v.
-func (g *DirectedGraph) RemoveVertex(v Vertex) {
+func (g *DirectedAdjacencyList) RemoveVertex(v Vertex) {
 	delete(g.edges, v)
 	for vtx, vertices := range g.edges {
 		for idx, candidate := range vertices {
@@ -213,7 +213,7 @@ func (g *DirectedGraph) RemoveVertex(v Vertex) {
 }
 
 // Vertices returns a slice of the vertices that are in the graph.
-func (g *DirectedGraph) Vertices() []Vertex {
+func (g *DirectedAdjacencyList) Vertices() []Vertex {
 	vertices := make([]Vertex, 0, len(g.edges))
 	for k := range g.edges {
 		vertices = append(vertices, k)
@@ -222,7 +222,7 @@ func (g *DirectedGraph) Vertices() []Vertex {
 }
 
 // Edges returns all the outgoing edges of the graph.
-func (g *DirectedGraph) Edges() []Edge {
+func (g *DirectedAdjacencyList) Edges() []Edge {
 	var edges []Edge
 	for k, neighbors := range g.edges {
 		for _, n := range neighbors {
@@ -233,11 +233,11 @@ func (g *DirectedGraph) Edges() []Edge {
 }
 
 // Neighbours returns a slice of v's neighbours.
-func (g *DirectedGraph) Neighbours(v Vertex) []Vertex {
+func (g *DirectedAdjacencyList) Neighbours(v Vertex) []Vertex {
 	return g.edges[v]
 }
 
-func (g *DirectedGraph) Predecessors(v Vertex) (result []Vertex) {
+func (g *DirectedAdjacencyList) Predecessors(v Vertex) (result []Vertex) {
 	for vtx, vertices := range g.edges {
 		for _, candidate := range vertices {
 			if candidate == v {

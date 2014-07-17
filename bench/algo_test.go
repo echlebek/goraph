@@ -15,14 +15,14 @@ func init() {
 }
 
 func initDense() {
-	dense = gp.NewDirectedGraph()
+	dense = gp.NewDirectedAdjacencyList()
 	vertices := make([]gp.Vertex, 0, 1000)
 	for i := 0; i < 1000; i++ {
 		vertices = append(vertices, dense.AddVertex())
 	}
 	// Make (n^2/2)-1 connections
 	for i := range vertices {
-		for j := i; j < len(vertices); j++ {
+		for j := i + 1; j < len(vertices); j++ {
 			dense.AddEdge(vertices[i], vertices[j])
 		}
 	}

@@ -78,7 +78,7 @@ func writeAttrs(w *bytes.Buffer, name string, tabs int, attrs map[string]interfa
 func WriteDot(w io.Writer, dot Dot) (int64, error) {
 	var graphT, nodeSep string
 	g := dot.graph
-	_, ok := g.(*goraph.DirectedGraph)
+	_, ok := g.(*goraph.DirectedAdjacencyList)
 	if ok {
 		graphT = "digraph"
 		nodeSep = digraphSep
