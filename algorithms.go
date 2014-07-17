@@ -24,9 +24,8 @@ func TopoSort(g Graph, deterministic bool) (result []Vertex, err error) {
 		if permanent, ok := marked[vtx]; ok {
 			if !permanent {
 				err = fmt.Errorf("cannot perform toposort: not a DAG")
-			} else {
-				return
 			}
+			return
 		}
 		// Mark vtx temporarily
 		marked[vtx] = false

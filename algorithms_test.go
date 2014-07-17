@@ -37,6 +37,23 @@ func TestSimpleTopoSort(t *testing.T) {
 	}
 }
 
+func TestTopoSortCycle(t *testing.T) {
+	// Test a graph with a cycle
+	graphEdges := map[Vertex][]Vertex{
+		0: {0, 1, 2},
+		1: {3, 4},
+		2: {5, 6},
+	}
+	g := newDirectedAdjacencyListFromMap(graphEdges)
+	if g.nextVertex != 7 {
+		t.Errorf("bad nextVertex: got %d, want %d", g.nextVertex, 7)
+	}
+	_, err := TopoSort(g, true)
+	if err == nil {
+		t.Errorf("expected error, got nil")
+	}
+}
+
 func TestShortestPath(t *testing.T) {
 	graphEdges := map[Vertex][]Vertex{
 		0: {1},
