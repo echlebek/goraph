@@ -4,14 +4,29 @@ import (
 	"sort"
 )
 
-// The Graph interface is implemented by all graph types.
+// Graph is implemented by all of the graph types. All of the graph
+// algorithms use this data type instead of the concrete types.
 type Graph interface {
+	// AddVertex creates an returns a new vertex in the graph.
 	AddVertex() Vertex
+
+	// RemoveVertex permanently removes a vertex from the graph.
 	RemoveVertex(v Vertex)
-	AddEdge(v1, v2 Vertex)
-	RemoveEdge(v1, v2 Vertex)
+
+	// AddEdge adds an edge between u and v. If the graph is directional,
+	// then the edge will go from u to v.
+	AddEdge(u, v Vertex)
+
+	// RemoveEdge removes the edge between u and v.
+	RemoveEdge(u, v Vertex)
+
+	// Vertices returns a slice of the graph's vertices.
 	Vertices() []Vertex
+
+	// Edges returns a slice of the graph's edges.
 	Edges() []Edge
+
+	// Neighbours returns a slice of the vertices that neighbour v.
 	Neighbours(v Vertex) []Vertex
 }
 
@@ -39,7 +54,6 @@ func NewAdjacencyList() *AdjacencyList {
 	return &AdjacencyList{edges: make(map[Vertex][]Vertex)}
 }
 
-// AddVertex adds a new vertex.
 func (g *AdjacencyList) AddVertex() Vertex {
 	v := g.nextVertex
 	g.edges[v] = make([]Vertex, 0)
@@ -47,7 +61,6 @@ func (g *AdjacencyList) AddVertex() Vertex {
 	return v
 }
 
-// RemoveVertex permanently removes vertex v.
 func (g *AdjacencyList) RemoveVertex(v Vertex) {
 	delete(g.edges, v)
 	for vtx, vertices := range g.edges {
@@ -59,21 +72,19 @@ func (g *AdjacencyList) RemoveVertex(v Vertex) {
 	}
 }
 
-// AddEdge adds an edge between v1 and v2.
-func (g *AdjacencyList) AddEdge(v1, v2 Vertex) {
-	if v2 < v1 {
-		v1, v2 = v2, v1
+func (g *AdjacencyList) AddEdge(u, v Vertex) {
+	if v < u {
+		u, v = v, u
 	}
-	edges := g.edges[v1]
-	g.edges[v1] = append(edges, v2)
+	edges := g.edges[u]
+	g.edges[u] = append(edges, v)
 }
 
-// RemoveEdge removes the edge between v2 and v2.
-func (g *AdjacencyList) RemoveEdge(v1, v2 Vertex) {
-	if v2 < v1 {
-		v1, v2 = v2, v1
+func (g *AdjacencyList) RemoveEdge(u, v Vertex) {
+	if v < u {
+		u, v = v, u
 	}
-	vertices, ok := g.edges[v1]
+	vertices, ok := g.edges[u]
 	if !ok {
 		return
 	}
@@ -82,17 +93,17 @@ func (g *AdjacencyList) RemoveEdge(v1, v2 Vertex) {
 		vtx Vertex
 	)
 	for idx, vtx = range vertices {
-		if vtx == v2 {
+		if vtx == v {
 			break
 		}
 	}
 	if idx >= 0 {
 		// Remove the edge
-		g.edges[v1] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
+		g.edges[u] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
 	}
 }
 
-// VertexSlice is a convenience for sorting vertices by ID.
+// VertexSlice is a convenience type for sorting vertices by ID.
 type VertexSlice []Vertex
 
 func (p VertexSlice) Len() int           { return len(p) }
@@ -100,7 +111,7 @@ func (p VertexSlice) Less(i, j int) bool { return p[i] < p[j] }
 func (p VertexSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 func (p VertexSlice) Sort()              { sort.Sort(p) }
 
-// EdgeSlice is a convenience for sorted edges by ID.
+// EdgeSlice is a convenience type for sorting edges by ID.
 type EdgeSlice []Edge
 
 func (p EdgeSlice) Len() int { return len(p) }
@@ -114,7 +125,6 @@ func (p EdgeSlice) Less(i, j int) bool {
 func (p EdgeSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 func (p EdgeSlice) Sort()         { sort.Sort(p) }
 
-// Vertices returns a slice of all vertices.
 func (g *AdjacencyList) Vertices() []Vertex {
 	vertices := make(VertexSlice, len(g.edges))
 	var i int
@@ -125,7 +135,6 @@ func (g *AdjacencyList) Vertices() []Vertex {
 	return vertices
 }
 
-// Edges returns a slice of all edges.
 func (g *AdjacencyList) Edges() []Edge {
 	var edges []Edge
 	for k, neighbors := range g.edges {
@@ -136,12 +145,11 @@ func (g *AdjacencyList) Edges() []Edge {
 	return edges
 }
 
-// Neighbours returns a slice of v's neighbours.
 func (g *AdjacencyList) Neighbours(v Vertex) []Vertex {
 	return g.edges[v]
 }
 
-// DirectedAdjacencyList provides a space-efficient directed graph.
+// DirectedAdjacencyList is like AdjacencyList, but directed.
 type DirectedAdjacencyList struct {
 	edges      map[Vertex][]Vertex
 	nextVertex Vertex
@@ -164,16 +172,15 @@ func (g *DirectedAdjacencyList) addVertex(v Vertex) bool {
 	return ok
 }
 
-// AddEdge connects vertices v1 and v2 in the graph.
-func (g *DirectedAdjacencyList) AddEdge(v1, v2 Vertex) {
-	g.addVertex(v1)
-	g.addVertex(v2)
-	g.edges[v1] = append(g.edges[v1], v2)
+// AddEdge connects vertices u and v in the graph.
+func (g *DirectedAdjacencyList) AddEdge(u, v Vertex) {
+	g.addVertex(u)
+	g.addVertex(v)
+	g.edges[u] = append(g.edges[u], v)
 }
 
-// RemoveEdge removes the edge between v1 and v2.
-func (g *DirectedAdjacencyList) RemoveEdge(v1, v2 Vertex) {
-	vertices, ok := g.edges[v1]
+func (g *DirectedAdjacencyList) RemoveEdge(u, v Vertex) {
+	vertices, ok := g.edges[u]
 	if !ok {
 		return
 	}
@@ -182,17 +189,16 @@ func (g *DirectedAdjacencyList) RemoveEdge(v1, v2 Vertex) {
 		vtx Vertex
 	)
 	for idx, vtx = range vertices {
-		if vtx == v2 {
+		if vtx == v {
 			break
 		}
 	}
 	if idx >= 0 {
 		// Remove the edge
-		g.edges[v1] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
+		g.edges[u] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
 	}
 }
 
-// AddVertex adds a new vertex.
 func (g *DirectedAdjacencyList) AddVertex() Vertex {
 	v := g.nextVertex
 	g.addVertex(v)
@@ -200,7 +206,6 @@ func (g *DirectedAdjacencyList) AddVertex() Vertex {
 	return v
 }
 
-// RemoveVertex permanently removes vertex v.
 func (g *DirectedAdjacencyList) RemoveVertex(v Vertex) {
 	delete(g.edges, v)
 	for vtx, vertices := range g.edges {
@@ -212,7 +217,6 @@ func (g *DirectedAdjacencyList) RemoveVertex(v Vertex) {
 	}
 }
 
-// Vertices returns a slice of the vertices that are in the graph.
 func (g *DirectedAdjacencyList) Vertices() []Vertex {
 	vertices := make([]Vertex, 0, len(g.edges))
 	for k := range g.edges {
@@ -221,7 +225,6 @@ func (g *DirectedAdjacencyList) Vertices() []Vertex {
 	return vertices
 }
 
-// Edges returns all the outgoing edges of the graph.
 func (g *DirectedAdjacencyList) Edges() []Edge {
 	var edges []Edge
 	for k, neighbors := range g.edges {
@@ -232,11 +235,11 @@ func (g *DirectedAdjacencyList) Edges() []Edge {
 	return edges
 }
 
-// Neighbours returns a slice of v's neighbours.
 func (g *DirectedAdjacencyList) Neighbours(v Vertex) []Vertex {
 	return g.edges[v]
 }
 
+// Predecessors returns a slice of vertices that connect to v directionally.
 func (g *DirectedAdjacencyList) Predecessors(v Vertex) (result []Vertex) {
 	for vtx, vertices := range g.edges {
 		for _, candidate := range vertices {
@@ -246,4 +249,10 @@ func (g *DirectedAdjacencyList) Predecessors(v Vertex) (result []Vertex) {
 		}
 	}
 	return
+}
+
+// Successors returns a slice of vertices that v connects to directionally.
+// This method returns the same thing as Neighbours.
+func (g *DirectedAdjacencyList) Successors(v Vertex) []Vertex {
+	return g.edges[v]
 }
