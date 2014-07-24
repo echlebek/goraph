@@ -84,22 +84,18 @@ func (g *AdjacencyList) RemoveEdge(u, v Vertex) {
 	if v < u {
 		u, v = v, u
 	}
+
 	vertices, ok := g.edges[u]
 	if !ok {
 		return
 	}
-	var (
-		idx int = -1
-		vtx Vertex
-	)
-	for idx, vtx = range vertices {
+
+	for idx, vtx := range vertices {
 		if vtx == v {
+			// Remove the edge
+			g.edges[u] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
 			break
 		}
-	}
-	if idx >= 0 {
-		// Remove the edge
-		g.edges[u] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
 	}
 }
 
@@ -184,18 +180,13 @@ func (g *DirectedAdjacencyList) RemoveEdge(u, v Vertex) {
 	if !ok {
 		return
 	}
-	var (
-		idx int = -1
-		vtx Vertex
-	)
-	for idx, vtx = range vertices {
+
+	for idx, vtx := range vertices {
 		if vtx == v {
+			// Remove the edge
+			g.edges[u] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
 			break
 		}
-	}
-	if idx >= 0 {
-		// Remove the edge
-		g.edges[u] = append(vertices[:idx], vertices[idx+1:len(vertices)]...)
 	}
 }
 
