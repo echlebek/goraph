@@ -5,6 +5,35 @@ import (
 	"testing"
 )
 
+func makeDense() Graph {
+	dense := NewDirectedAdjacencyList()
+	vertices := make([]Vertex, 0, 10000)
+	for i := 0; i < 10000; i++ {
+		vertices = append(vertices, dense.AddVertex())
+	}
+	// Make (n^2/2)-1 connections
+	for i := range vertices {
+		for j := i + 1; j < len(vertices); j++ {
+			dense.AddEdge(vertices[i], vertices[j])
+		}
+	}
+	return dense
+}
+
+func BenchmarkTopoSort(b *testing.B) {
+	dense := makeDense()
+	for i := 0; i < b.N; i++ {
+		TopoSort(dense, false)
+	}
+}
+
+func BenchmarkDeterministicTopoSort(b *testing.B) {
+	dense := makeDense()
+	for i := 0; i < b.N; i++ {
+		TopoSort(dense, true)
+	}
+}
+
 func TestEmptyTopoSort(t *testing.T) {
 	g := NewDirectedAdjacencyList()
 	result, err := TopoSort(g, false)
