@@ -3,9 +3,11 @@ package dot
 import (
 	"bytes"
 	"fmt"
-	"github.com/echlebek/goraph"
 	"io"
 	"sort"
+	"strings"
+
+	"github.com/echlebek/goraph"
 )
 
 const (
@@ -67,10 +69,11 @@ func writeAttrs(w *bytes.Buffer, name string, tabs int, attrs map[string]interfa
 		keys = append(keys, k)
 	}
 	sort.Sort(keys)
+	list := []string{}
 	for _, k := range keys {
-		fmt.Fprintf(w, "%s=%v, ", k, attrs[k])
+		list = append(list, fmt.Sprintf("%s=%v", k, attrs[k]))
 	}
-	fmt.Fprint(w, "];\n")
+	fmt.Fprintln(w, strings.Join(list, ", "), "];")
 }
 
 // WriteDot writes dot to w. It returns the number of bytes written and
