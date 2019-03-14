@@ -71,7 +71,13 @@ func writeAttrs(w *bytes.Buffer, name string, tabs int, attrs map[string]interfa
 	sort.Sort(keys)
 	list := []string{}
 	for _, k := range keys {
-		list = append(list, fmt.Sprintf("%s=%v", k, attrs[k]))
+		v := attrs[k]
+		switch value := v.(type) {
+		case string:
+			list = append(list, fmt.Sprintf("%s=%q", k, value))
+		default:
+			list = append(list, fmt.Sprintf("%s=%v", k, value))
+		}
 	}
 	fmt.Fprintln(w, strings.Join(list, ", "), "];")
 }

@@ -39,14 +39,14 @@ func TestDirectedDotWriter(t *testing.T) {
 
 	expected := `digraph {
 	graph [ splines=false ];
-	0 [ label=Happy ];
-	1 [ label=Sleepy, shape=egg ];
+	0 [ label="Happy" ];
+	1 [ label="Sleepy", shape="egg" ];
 	1 -> 0;
 	1 -> 2;
 	3 -> 1;
 	4 -> 3;
 	4 -> 5;
-	5 -> 6 [ arrowhead=diamond ];
+	5 -> 6 [ arrowhead="diamond" ];
 	6 -> 7;
 	6 -> 9;
 	9 -> 8;
